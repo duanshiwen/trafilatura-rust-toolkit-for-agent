@@ -129,6 +129,33 @@ trafilatura-rust-for-mcp = { version = "0.1", default-features = false }
 
 参见 [docs/USAGE.md](docs/USAGE.md)。
 
+## Swift / macOS 原生客户端
+
+本项目提供 Swift Package 集成路径，可供 SwiftUI/AppKit macOS 客户端调用 Rust 提取能力。
+
+先生成 Swift Package 所需的 `.xcframework`：
+
+```bash
+scripts/build-swift-package.sh
+```
+
+然后在 Xcode 中添加本地 Swift Package：
+
+```text
+swift/TrafilaturaSwift
+```
+
+Swift 代码中使用：
+
+```swift
+import Trafilatura
+
+let text = try Trafilatura.extractText(fromHTML: html)
+let json = try Trafilatura.extractJSONForMCP(fromHTML: html)
+```
+
+详细说明见 [docs/SWIFT_INTEGRATION.md](docs/SWIFT_INTEGRATION.md)。
+
 ## 路线图
 
 - 改进 DOM 修改与清理逻辑，使其更接近 Python Trafilatura。

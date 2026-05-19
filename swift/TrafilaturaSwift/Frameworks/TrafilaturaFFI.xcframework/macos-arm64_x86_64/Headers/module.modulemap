@@ -1,0 +1,4 @@
+module TrafilaturaFFI {
+    header "trafilatura_ffi.h"
+    export *
+}

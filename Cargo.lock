@@ -1720,6 +1720,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "trafilatura-ffi"
+version = "0.1.0"
+dependencies = [
+ "libc",
+ "serde",
+ "serde_json",
+ "trafilatura-rust-for-mcp",
+]
+
+[[package]]
 name = "trafilatura-rust-for-mcp"
 version = "0.1.0"
 dependencies = [

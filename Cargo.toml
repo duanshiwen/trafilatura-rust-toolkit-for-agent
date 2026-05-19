@@ -1,3 +1,7 @@
+[workspace]
+members = [".", "crates/trafilatura-ffi"]
+resolver = "2"
+
 [package]
 name = "trafilatura-rust-for-mcp"
 version = "0.1.0"
