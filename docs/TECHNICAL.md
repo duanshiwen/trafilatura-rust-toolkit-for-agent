@@ -1,16 +1,16 @@
-# Technical Architecture
+# 技术架构
 
-## Design goals
+## 设计目标
 
-`trafilatura-rust-for-mcp` is a Rust public library for extracting useful text and metadata from web pages.
+`trafilatura-rust-for-mcp` 是一个 Rust 公共库，用于从网页中提取有用的正文文本和元数据。
 
-The Python Trafilatura project uses `lxml` and extensive XPath heuristics. Rust has a different ecosystem, so this port uses `scraper`/`html5ever` with CSS selectors and custom scoring functions instead of a direct XPath translation.
+Python Trafilatura 项目使用 `lxml` 和大量 XPath 启发式规则。Rust 生态不同，因此这个移植版本没有直接翻译 XPath，而是使用 `scraper`/`html5ever`、CSS 选择器以及自定义评分函数来实现相近目标。
 
-## Module map
+## 模块关系
 
 ```mermaid
 graph LR
-    API[lib.rs public API] --> Extractor[extractor]
+    API[lib.rs 公共 API] --> Extractor[extractor]
     API --> Config[config]
     Extractor --> Metadata[metadata]
     Extractor --> Output[output]
@@ -21,11 +21,11 @@ graph LR
     Output --> Document
 ```
 
-## Extraction pipeline
+## 提取流程
 
 ```mermaid
 sequenceDiagram
-    participant User
+    participant User as 用户
     participant API as extract/extract_with_metadata
     participant Parser as scraper::Html
     participant Meta as metadata
@@ -36,19 +36,19 @@ sequenceDiagram
     API->>Parser: parse_document(html)
     API->>Meta: extract_metadata(parsed, url)
     API->>Ext: select_best_candidate(parsed)
-    Ext->>Ext: score article/main/body candidates
-    Ext->>Ext: collect blocks h1/h2/p/li/table...
-    Ext->>Ext: fallback to baseline if too short
-    Ext->>Meta: merge text into Document
+    Ext->>Ext: 对 article/main/body 候选节点评分
+    Ext->>Ext: 收集 h1/h2/p/li/table 等文本块
+    Ext->>Ext: 内容过短时回退到 baseline
+    Ext->>Meta: 将正文合并进 Document
     API->>Out: render_document(Document, format)
     Out-->>User: text/json/xml/html/markdown
 ```
 
-## Core data structures
+## 核心数据结构
 
 ### `ExtractorOptions`
 
-Controls extraction behavior:
+控制提取行为：
 
 - `output_format`
 - `focus`
@@ -60,42 +60,42 @@ Controls extraction behavior:
 - `include_tables`
 - `include_images`
 - `deduplicate`
-- size thresholds
+- 大小阈值
 
 ### `Document`
 
-Serializable model containing:
+可序列化的数据模型，包含：
 
-- title, author, URL, hostname
-- description, sitename, date
-- categories, tags
-- fingerprint
-- extracted text and comments
-- image, page type, language
+- 标题、作者、URL、主机名
+- 描述、站点名、日期
+- 分类、标签
+- 内容指纹
+- 提取出的正文与评论
+- 图片、页面类型、语言
 
-## Candidate selection
+## 候选内容选择
 
-The extractor scans likely content containers in priority order:
+提取器会按优先级扫描可能的正文容器：
 
 1. `article`
 2. `main`
 3. `itemprop*=articleBody`
-4. article/post/story/body/content class and ID markers
+4. 包含 article/post/story/body/content 等 class 或 ID 标记的节点
 5. `[role=main]`
-6. `body` fallback
+6. `body` 回退方案
 
-Each candidate is scored by:
+每个候选节点会根据以下因素评分：
 
-- total text length
-- number of paragraphs
-- number of headings
-- link density penalty
-- table penalty if tables are disabled
-- precision/recall focus bonus
+- 总文本长度
+- 段落数量
+- 标题数量
+- 链接密度惩罚
+- 当表格被禁用时的表格惩罚
+- precision/recall 模式加成
 
-## Boilerplate filtering
+## 样板内容过滤
 
-The extractor skips nodes whose tag or attributes indicate recurring non-content UI:
+如果节点的标签或属性表明它属于重复出现的非正文 UI，提取器会跳过该节点，例如：
 
 - nav
 - footer
@@ -108,51 +108,51 @@ The extractor skips nodes whose tag or attributes indicate recurring non-content
 - ads/promos/widgets
 - modals/overlays
 
-## Metadata extraction
+## 元数据提取
 
-The `metadata` module extracts:
+`metadata` 模块会提取：
 
-- OpenGraph fields (`og:title`, `og:description`, `og:url`, etc.)
-- common meta names (`author`, `description`, `keywords`, etc.)
+- OpenGraph 字段（`og:title`、`og:description`、`og:url` 等）
+- 常见 meta name（`author`、`description`、`keywords` 等）
 - canonical URL
-- `title`/`h1` fallback
-- JSON-LD article fields (`headline`, `author`, `publisher`, `datePublished`, etc.)
+- `title`/`h1` 回退标题
+- JSON-LD 文章字段（`headline`、`author`、`publisher`、`datePublished` 等）
 
-## Output formats
+## 输出格式
 
-The output module renders `Document` as:
+`output` 模块可以将 `Document` 渲染为：
 
-- TXT / Markdown with optional YAML-style metadata header
-- JSON via `serde_json`
-- simple XML
-- simple HTML
+- TXT / Markdown，并可选择附加 YAML 风格的元数据头
+- 通过 `serde_json` 输出 JSON
+- 简单 XML
+- 简单 HTML
 
-## Error handling
+## 错误处理
 
-Library APIs return:
+库 API 返回：
 
 ```rust
 pub type Result<T> = std::result::Result<T, TrafilaturaError>;
 ```
 
-Errors are values and use `thiserror`. Library code avoids `unwrap()`.
+错误被建模为值，并使用 `thiserror`。库代码避免使用 `unwrap()`。
 
 ## Feature flags
 
-| Feature | Default | Purpose |
+| Feature | 默认启用 | 用途 |
 |---|---:|---|
-| `download` | yes | Enables async `reqwest` downloader |
+| `download` | 是 | 启用异步 `reqwest` 下载器 |
 
-## Differences from Python Trafilatura
+## 与 Python Trafilatura 的差异
 
-This initial Rust port intentionally does **not** yet implement:
+这个初始 Rust 移植版目前**尚未**实现：
 
-- full XPath parity
-- jusText integration
-- readability-lxml parity
-- TEI validation
-- feed/sitemap crawling
-- advanced language detection
-- complete date extraction heuristics
+- 完整 XPath 等价能力
+- jusText 集成
+- readability-lxml 等价能力
+- TEI 校验
+- feed/sitemap 爬取
+- 高级语言检测
+- 完整日期提取启发式规则
 
-These are future milestones.
+这些能力属于后续里程碑。

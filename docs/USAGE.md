@@ -1,6 +1,6 @@
-# Usage Guide
+# 使用指南
 
-## Basic extraction
+## 基础提取
 
 ```rust
 use trafilatura_rust_for_mcp::{extract, ExtractorOptions};
@@ -9,7 +9,7 @@ let html = "<article><p>Hello world.</p></article>";
 let text = extract(html, &ExtractorOptions::default())?;
 ```
 
-## Configure output format
+## 配置输出格式
 
 ```rust
 use trafilatura_rust_for_mcp::{extract, ExtractorOptions, OutputFormat};
@@ -23,7 +23,7 @@ let options = ExtractorOptions {
 let markdown = extract(html, &options)?;
 ```
 
-## JSON output for MCP
+## 面向 MCP 的 JSON 输出
 
 ```rust
 use trafilatura_rust_for_mcp::{extract, ExtractorOptions};
@@ -32,17 +32,17 @@ let options = ExtractorOptions::for_mcp();
 let json = extract(html, &options)?;
 ```
 
-`ExtractorOptions::for_mcp()` sets:
+`ExtractorOptions::for_mcp()` 会设置：
 
-- JSON output
-- metadata enabled
-- comments disabled
-- links enabled
-- formatting enabled
+- JSON 输出
+- 启用元数据
+- 禁用评论
+- 启用链接
+- 启用格式保留
 
-This is useful when a tool needs to pass structured article content into an MCP pipeline or LLM context.
+当工具需要把结构化文章内容传入 MCP 流水线或 LLM 上下文时，这个配置很有用。
 
-## Extract metadata object
+## 提取元数据对象
 
 ```rust
 use trafilatura_rust_for_mcp::{extract_with_metadata, ExtractorOptions};
@@ -52,9 +52,9 @@ println!("Title: {:?}", doc.title);
 println!("Text: {}", doc.text);
 ```
 
-## Source URL
+## 来源 URL
 
-Pass a source URL to improve hostname/canonical metadata:
+传入来源 URL 可以改善主机名与 canonical 元数据：
 
 ```rust
 use trafilatura_rust_for_mcp::ExtractorOptions;
@@ -66,7 +66,7 @@ let options = ExtractorOptions {
 };
 ```
 
-## Precision vs recall
+## 精确率与召回率
 
 ```rust
 use trafilatura_rust_for_mcp::{ExtractorOptions, Focus};
@@ -82,13 +82,13 @@ let recall = ExtractorOptions {
 };
 ```
 
-- `Precision`: more aggressive boilerplate filtering.
-- `Balanced`: default.
-- `Recall`: tolerate more candidate content.
+- `Precision`：更激进地过滤样板内容。
+- `Balanced`：默认模式。
+- `Recall`：容忍更多候选内容，尽量多保留正文。
 
-## Downloads
+## 下载
 
-With default features:
+使用默认 features 时：
 
 ```rust,no_run
 use trafilatura_rust_for_mcp::{fetch_url, FetchOptions};
@@ -101,15 +101,15 @@ async fn main() -> trafilatura_rust_for_mcp::Result<()> {
 }
 ```
 
-Without network support:
+如需禁用网络支持：
 
 ```toml
 trafilatura-rust-for-mcp = { version = "0.1", default-features = false }
 ```
 
-## Fingerprints
+## 内容指纹
 
-Enable `deduplicate` to calculate a simhash fingerprint:
+启用 `deduplicate` 可以计算 simhash 指纹：
 
 ```rust
 let options = ExtractorOptions {
@@ -121,9 +121,9 @@ let doc = extract_with_metadata(html, &options)?;
 println!("{:?}", doc.fingerprint);
 ```
 
-## Error handling
+## 错误处理
 
-All fallible APIs return `Result<T, TrafilaturaError>`:
+所有可能失败的 API 都返回 `Result<T, TrafilaturaError>`：
 
 ```rust
 match extract(html, &ExtractorOptions::default()) {
@@ -132,10 +132,10 @@ match extract(html, &ExtractorOptions::default()) {
 }
 ```
 
-## Recommended MCP integration pattern
+## 推荐 MCP 集成模式
 
-1. Fetch or receive HTML.
-2. Call `extract_with_metadata` or `extract` with `ExtractorOptions::for_mcp()`.
-3. Store the resulting JSON in your MCP tool response.
-4. Keep original URL in `ExtractorOptions::url`.
-5. Use `deduplicate` when building corpora or crawl pipelines.
+1. 获取或接收 HTML。
+2. 使用 `ExtractorOptions::for_mcp()` 调用 `extract_with_metadata` 或 `extract`。
+3. 将得到的 JSON 放入 MCP 工具响应中。
+4. 在 `ExtractorOptions::url` 中保留原始 URL。
+5. 构建语料库或爬取流水线时启用 `deduplicate`。

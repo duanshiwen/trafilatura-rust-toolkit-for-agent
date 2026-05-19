@@ -1,8 +1,8 @@
-# Contributing
+# 贡献指南
 
-Thanks for your interest in contributing to `trafilatura-rust-for-mcp`.
+感谢你有兴趣为 `trafilatura-rust-for-mcp` 做贡献。
 
-## Development setup
+## 开发环境设置
 
 ```bash
 git clone https://github.com/your-org/trafilatura-rust-for-mcp.git
@@ -10,9 +10,9 @@ cd trafilatura-rust-for-mcp
 cargo test
 ```
 
-## Quality checks
+## 质量检查
 
-Before submitting a pull request, run:
+提交 Pull Request 之前，请运行：
 
 ```bash
 cargo fmt
@@ -21,30 +21,30 @@ cargo clippy --all-targets -- -D warnings
 cargo doc --no-deps
 ```
 
-## Coding principles
+## 编码原则
 
-- No `unwrap()` in library code.
-- Use `thiserror` for typed errors.
-- Keep public APIs documented with rustdoc.
-- Prefer borrowed inputs (`&str`) over owned `String` where possible.
-- Keep feature flags minimal and explicit.
-- Add tests for extraction changes.
+- 库代码中不要使用 `unwrap()`。
+- 使用 `thiserror` 定义类型化错误。
+- 为公共 API 保持 rustdoc 文档。
+- 参数优先使用借用输入（如 `&str`），避免不必要的自有 `String`。
+- feature flags 保持最小且显式。
+- 修改提取逻辑时添加对应测试。
 
-## Pull request checklist
+## Pull Request 检查清单
 
-- [ ] Tests added or updated.
-- [ ] Documentation updated if public API changed.
-- [ ] `cargo fmt` run.
-- [ ] `cargo test` passes.
-- [ ] `cargo clippy --all-targets -- -D warnings` passes.
+- [ ] 已添加或更新测试。
+- [ ] 如果公共 API 发生变化，已更新文档。
+- [ ] 已运行 `cargo fmt`。
+- [ ] `cargo test` 通过。
+- [ ] `cargo clippy --all-targets -- -D warnings` 通过。
 
-## Roadmap-friendly contributions
+## 适合路线图的贡献方向
 
-Good first areas:
+适合作为首次贡献的方向：
 
-- More metadata fields.
-- Better date extraction.
-- More boilerplate fixtures.
-- Feed/sitemap discovery.
-- TEI output.
-- Benchmark fixtures comparing Python Trafilatura.
+- 更多元数据字段。
+- 更好的日期提取。
+- 更多样板内容过滤 fixtures。
+- Feed/sitemap 发现。
+- TEI 输出。
+- 与 Python Trafilatura 对比的基准测试 fixtures。
